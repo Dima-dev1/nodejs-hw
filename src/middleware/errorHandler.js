@@ -1,10 +1,19 @@
 import { HttpError } from 'http-errors';
+import { MulterError } from 'multer';
 
 export const errorHandler = (err, req, res, next) => {
   console.error(err);
 
   if (err instanceof HttpError) {
     res.status(err.status).json({
+      message: err.message,
+    });
+
+    return;
+  }
+
+  if (err instanceof MulterError) {
+    res.status(400).json({
       message: err.message,
     });
 

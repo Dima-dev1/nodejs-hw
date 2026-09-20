@@ -108,8 +108,6 @@ export const requestResetEmail = async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  // Same response whether the user exists or not,
-  // so nobody can use this route to find out which emails are registered
   if (!user) {
     return res
       .status(200)
@@ -129,11 +127,13 @@ export const requestResetEmail = async (req, res) => {
 
   try {
     await sendEmail({
+      from: process.env.SMTP_FROM,
       to: email,
       subject: 'Reset your password',
       html,
     });
-  } catch {
+  } catch (error) {
+    console.error('SMTP error:', error.message);
     throw createHttpError(
       500,
       'Failed to send the email, please try again later.',
